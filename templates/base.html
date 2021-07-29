@@ -1,0 +1,110 @@
+{{define "head"}}
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Comfortaa:300,400,500,600,700|Montserrat+Alternates:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap&subset=cyrillic"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {{template "scripts"}}
+    <style>
+        body {
+            font-family: 'Montserrat', serif;
+        }
+        .dn {
+            display: none;
+        }
+        .sortKey {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .noSelect {
+            -ms-user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .underlined {
+            border-bottom-style: solid;
+            border-color: rebeccapurple;
+        }
+        input[type="text"], input[type="password"], input[type="number"], select:not([multiple])  {
+            background-color: rgba(39, 39, 39, 0.71);
+            color: rgba(0, 214, 255, 0.96);
+            border: 1px solid grey;
+            border-radius: 5px;
+        }
+        input[type="text"]:focus, input[type="password"]:focus,  input[type="number"]:focus  {
+            background-color: rgba(0, 0, 0, 0.71);
+            color: rgba(0, 214, 255, 0.96);
+        }
+        input[type="text"]:hover, input[type="password"]:hover , input[type="number"]:hover {
+            background-color: rgba(0, 0, 0, 0.71);
+            color: #72c1e6;
+        }
+
+
+        .cardShadow {
+            box-shadow: 5px 5px 15px rebeccapurple; /* Тень */
+            padding: 10px; /* Поля вокруг текста */
+            border-radius: 10px; /* Радиус скругления */
+        }
+        .darkShadow {
+            box-shadow: 5px 5px 15px #342357; /* Тень */
+            padding: 10px; /* Поля вокруг текста */
+            border-radius: 10px; /* Радиус скругления */
+        }
+        .darkBtn {
+            font-size: 1em;
+            padding: 2px 35px 3px 35px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.71);
+            color: rgba(0, 214, 255, 0.96);
+            border: 3px solid rebeccapurple;
+            border-radius: 10px;
+        }
+
+        .darkBtn:hover {background-color: rgba(49, 49, 49, 0.71); color: #72c1e6;}
+        .darkBtn:active {background-color: rgba(49, 49, 49, 0.71); color: white}
+
+
+    </style>
+    {{template "styles"}}
+
+</head>
+<body class="bg-dark text-white">
+<nav class="navbar navbar-expand-lg navbar-dark underlined">
+    <div class="container-fluid">
+        <span class="navbar-brand noSelect">Swim Chart</span>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item"><a class="nav-link" href="#">Домой</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">История</a></li>
+            </ul>
+            <button type="button" class="btn btn-success dn">Войти</button>
+        </div>
+    </div>
+</nav>
+
+
+
+<div class=" container mt-3" id="mainDiv">
+{{end}}
+
+    
+{{define "bottom"}}
+</div>
+
+<span style="opacity: 0.5; position: fixed; right: 3px; bottom: 0">Developed by <a href="https://github.com/Faralaks">Faralaks</a></span>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+{{end}}
