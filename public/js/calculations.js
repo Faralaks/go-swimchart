@@ -2,58 +2,115 @@ const MALE = "Муж.";
 const FEMALE = "Жен.";
 const ROADS = 3;
 
-
-let males;
-let females;
+let dividedSports;
 let charts;
+let periodList;
+let chartNum;
 
-function divideSexDistsGroups(sports) {
+function divideSports(sports) {
     for (let UID in sports) {
         if (!sports.hasOwnProperty(UID)) continue;
-        sport = sports[UID];
+        let s = sports[UID];
+        s.inPeriod = selectPeriod(s);
 
-        if (sport.gender === MALE) {
-            divideDistsGroups(sport, males)
-        }
-        else {
-            divideDistsGroups(sport, females);
-        }
+        s.distances.forEach(function (dist) {
+            if (!dividedSports[dist.name]) dividedSports[dist.name] = {};
+            if (!dividedSports[dist.name][s.gender]) dividedSports[dist.name][s.gender] = {};
+            if (!dividedSports[dist.name][s.gender][s.inPeriod]) dividedSports[dist.name][s.gender][s.inPeriod] = {B1:[], B2:[], B3:[]};
+
+            dividedSports[dist.name][s.gender][s.inPeriod][s.group].push({UID: UID, name: s.name, dist: dist.name, distTime: dist.time});
+        });
+
+
     }
 
-
-
-}
-
-function divideDistsGroups(sport, genderGroup) {
-    sport.distances.forEach(function (dist) {
-        if (!genderGroup[sport.group][dist.name]) genderGroup[sport.group][dist.name] = [];
-
-        genderGroup[sport.group][dist.name].push({name: sport.name, distTime:dist.time});
-    })
-
 }
 
 
-function makeSortAndCharts(dividedSportsGroup, sex, sideGroup={}) {
-    DISTANCES.forEach(function (distName) {
-        dist = dividedSportsGroup[distName];
-        if (!dist) dist = [];
-        if (sideGroup[distName]) dist = dist.concat(sideGroup[distName]);
 
-        dist.sort(sortDIstTimes);
-        if (dist.length !== 0) makeCharts(dist, sex, distName);
-    });
-}
 
-function makeCharts(sortedSportsGroup, sex, distName) {
+function makeGroupCharts(sortedSportsGroup, period, group, point, headText) {
+
     for (let i = sortedSportsGroup.length; i >= 0; i -= ROADS) {
         let start = sortedSportsGroup.length-ROADS;
         if (start < 0) start = 0;
         let top = sortedSportsGroup.splice(start, ROADS);
-        if (!charts[distName]) {charts[distName] = {}; charts[distName][MALE] = []; charts[distName][FEMALE] = []; }
-        charts[distName][sex].push([top[1] || {}, top[0] || {}, top[2] || {}])
+        if (top.length === 0) continue;
+        let three = [top[1]||{}, top[0]||{}, top[2]||{}];
+        chartNum++;
+
+
+        let newChartCard = $(`
+            <div class="card mb-5 bg-dark cardShadow">
+                <div class="card-header underlined" style="font-size: 1.3em;">${chartNum} Заплыв | ${headText} | ${period} | ${group}</div>
+                <div class="card-body">
+                    <p>${three[0].name || "Пусто"} - Первая дорожка ${fromMSec(three[0].distTime)}</p>
+                    <p>${three[1].name || "Пусто"} - Вторая дорожка ${fromMSec(three[1].distTime)}</p>
+                    <p>${three[2].name || "Пусто"} - Третья дорожка ${fromMSec(three[2].distTime)}</p>
+    
+                </div>
+            </div>
+        
+        `);
+        point.append(newChartCard);
     }
 }
+
+
+
+
+function makeCharts(B2B3Union) {
+    // Тут будет много цыклов, главной задачей которых будет перебрать  все финальные группы плавцов, отсортировать их и построить чарты.
+    let entryPoint = $("#chartPlace");
+    entryPoint.empty();
+    let headText;
+
+    for (let dist in dividedSports) {
+        if (!dividedSports.hasOwnProperty(dist)) continue;
+        let genders = dividedSports[dist];
+
+        for (let gender in genders) {
+            if (!genders.hasOwnProperty(gender)) continue;
+            let periods = genders[gender];
+            headText = gender+" | "+dist;
+            entryPoint.append($(`<h1 class='text-white mt-5'>${headText}</h1>`));
+
+
+            for (let period in periods) {
+                if (!periods.hasOwnProperty(period)) continue;
+                let groups = periods[period];
+
+                if (groups.B1.length !== 0) {groups.B1.sort(sortDIstTimes); makeGroupCharts(groups.B1, period, "B1", entryPoint, headText)}
+                if (B2B3Union) {
+                    groups.B2B3 = groups.B2.concat(groups.B3);
+                    groups.B2B3.sort(sortDIstTimes);
+                    makeGroupCharts(groups.B2B3, period, "B2&B3", entryPoint, headText);
+                } else {
+                    groups.B2.sort(sortDIstTimes);
+                    makeGroupCharts(groups.B2, period, "B2", entryPoint, headText);
+
+                    groups.B3.sort(sortDIstTimes);
+                    makeGroupCharts(groups.B3, period, "B3", entryPoint, headText)
+
+                }
+                console.log("----")
+
+
+
+
+
+
+            }
+
+
+        }
+
+    }
+
+}
+
+
+
 
 function sortDIstTimes(a, b) {
     if (a.distTime < b.distTime) return -1;
@@ -65,59 +122,38 @@ function sortDIstTimes(a, b) {
 
     function calculate(B2B3Union) {
         clearCharts();
-        divideSexDistsGroups(sports);
-        if (B2B3Union) makeSortAndCharts(males.B2, MALE, males.B3);
-        else makeSortAndCharts(males.B2, MALE);
-        if (B2B3Union) makeSortAndCharts(females.B2, FEMALE, females.B3);
-        else makeSortAndCharts(females.B2, FEMALE);
-
-
-        visualizeCharts()
+        makePeriodList();
+        divideSports(sports);
+        makeCharts(B2B3Union);
 
 }
 
 
 
 function clearCharts() {
-    males = {B1:{}, B2:{}, B3:{}};
-    females = {B1:{}, B2:{}, B3:{}};
+    dividedSports = {};
+
+    periodList = [];
     charts = {};
     chartNum = 0;
 
 }
 
 
-function visualizeCharts() {
-    let point = $("#chartPlace");
-    point.empty();
+function makePeriodList() {
+    periodArray.forEach(function (i) {
+        periodList.push([+$("#perFromSelect"+i).val(), +$("#perToSelect"+i).val()]);
+    });
+}
 
-
-    for (distName in charts) {
-        if (!charts.hasOwnProperty(distName)) continue
-        distSports = charts[distName];
-
-
-        let headText = distName+" | ";
-        point.append($(`<h1 class='text-white mt-5'>${headText}</h1>`));
-        for (let i = 0; i  < distSports.length; i++) {
-            chartNum++;
-            console.log(distSports)
-            let three = distSports[i];
-            newChartCard = $(`
-            <div class="card mb-5 bg-dark cardShadow">
-                <div class="card-header underlined" style="font-size: 1.3em;">${chartNum} Заплыв | ${headText}</div>
-                <div class="card-body">
-                    <p>${three[0].name || "Пусто"} - Первая дорожка ${fromMSec(three[0].distTime)}</p>
-                    <p>${three[1].name || "Пусто"} - Вторая дорожка ${fromMSec(three[1].distTime)}</p>
-                    <p>${three[2].name || "Пусто"} - Третья дорожка ${fromMSec(three[2].distTime)}</p>
-    
-                </div>
-            </div>
-        
-        `)
-        point.append(newChartCard);
+function selectPeriod(sport={year: 2010}) {
+    for (let i = 0; i < periodList.length; i++) {
+        let fromTo = periodList[i];
+        if (sport.year >= fromTo[0] && sport.year <= fromTo[1]) {
+            return `${fromTo[0]}-${fromTo[1]}`
         }
     }
+    return "Другие"
 
 }
 
