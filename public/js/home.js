@@ -101,7 +101,9 @@ function toMSec(min, sec, mSec) {
 
 function fromMSec(mSec) {
     if (!mSec) return "";
-    return "("+mSec+")"
+    let sec = Math.floor(mSec/100);
+    let min = Math.floor(sec/60);
+    return `(${min}:${sec-min*60}:${mSec-(sec)*100})`
 }
 
 
