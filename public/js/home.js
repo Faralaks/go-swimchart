@@ -119,7 +119,7 @@ function savePeriods(periods) {
 
 function reloadPeriods() {
     periodCounter = 0;
-    periodList = JSON.parse(localStorage.getItem("periods"));
+    periodList = JSON.parse(localStorage.getItem("periods")) || [];
     periodArray = [];
     $(".perTr").remove();
     periodList.forEach(function (fromTo) {
@@ -146,7 +146,7 @@ function clearSports() {
 
 function reloadData() {
     clearSports();
-    sports = JSON.parse(localStorage.getItem("sports"));
+    sports = JSON.parse(localStorage.getItem("sports")) || {};
     for (let sport in sports) {
         if (!sports.hasOwnProperty(sport)) continue;
         sportsCounter++;
