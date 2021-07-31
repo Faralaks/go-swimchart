@@ -75,7 +75,6 @@ function makeCharts(B2B3Union) {
             headText = gender+" | "+dist;
             entryPoint.append($(`<h1 class='text-white mt-5'>${headText}</h1>`));
 
-
             for (let period in periods) {
                 if (!periods.hasOwnProperty(period)) continue;
                 let groups = periods[period];
@@ -93,11 +92,6 @@ function makeCharts(B2B3Union) {
                     makeGroupCharts(groups.B3, period, "B3", entryPoint, headText)
 
                 }
-                console.log("----")
-
-
-
-
 
 
             }
@@ -123,6 +117,7 @@ function sortDIstTimes(a, b) {
     function calculate(B2B3Union) {
         clearCharts();
         makePeriodList();
+        savePeriods(periodList);
         divideSports(sports);
         makeCharts(B2B3Union);
 
@@ -141,9 +136,11 @@ function clearCharts() {
 
 
 function makePeriodList() {
+    periodList = [];
     periodArray.forEach(function (i) {
         periodList.push([+$("#perFromSelect"+i).val(), +$("#perToSelect"+i).val()]);
     });
+    return periodList
 }
 
 function selectPeriod(sport={year: 2010}) {

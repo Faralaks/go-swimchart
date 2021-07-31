@@ -67,13 +67,13 @@ function makeDistanceRow() {
 
 }
 
-function makePeriodRow() {
+function makePeriodRow(from, to) {
     periodCounter++;
     periodArray.push(periodCounter);
 
     let newTr = $(`<tr class="perTr" id="per${periodCounter}"></tr>`);
-    newTr.append($(TD).append($(`<select class='form-select form-select-sm' id='perFromSelect${periodCounter}'></select>`).html(YEAR_OPTIONS)));
-    newTr.append($(TD).append($(`<select class='form-select form-select-sm' id='perToSelect${periodCounter}'></select>`).html(YEAR_OPTIONS)));
+    newTr.append($(TD).append($(`<select class='form-select form-select-sm' id='perFromSelect${periodCounter}'></select>`).html(YEAR_OPTIONS).val(from||"--?--")));
+    newTr.append($(TD).append($(`<select class='form-select form-select-sm' id='perToSelect${periodCounter}'></select>`).html(YEAR_OPTIONS).val(to||"--?--")));
 
     newTr.append($(`<td><span class='btn btn-outline-danger btn-sm' onclick='$(per${periodCounter}).remove();
                                      periodArray.splice(periodArray.indexOf(${periodCounter}), 1)'>
@@ -87,7 +87,6 @@ function makePeriodRow() {
 
 
 function clearAddForm() {
-    return;
     $("#nameField").val("");
     $(".distTr").remove();
     distanceCounter = 0;
@@ -111,10 +110,31 @@ function removeSport(UID) {
     delete sports[UID];
 }
 
+
+function savePeriods(periods) {
+    if (!periods) periods = makePeriodList();
+    localStorage.removeItem('periods');
+    localStorage.setItem('periods', JSON.stringify(periods));
+}
+
+function reloadPeriods() {
+    periodCounter = 0;
+    periodList = JSON.parse(localStorage.getItem("periods"));
+    periodArray = [];
+    $(".perTr").remove();
+    periodList.forEach(function (fromTo) {
+        makePeriodRow(fromTo[0], fromTo[1])
+    });
+
+}
+
+
+
 function saveSports() {
     localStorage.removeItem('sports');
     localStorage.setItem('sports', JSON.stringify(sports));
 }
+
 
 function clearSports() {
     $("#sportTablePlace").slideUp();
@@ -132,7 +152,6 @@ function reloadData() {
         sportsCounter++;
         newSportTr(sport, sports[sport].name, sports[sport].gender, sports[sport].year, sports[sport].group, sports[sport].distString)
     }
-
 
 }
 
@@ -185,3 +204,8 @@ function addSport(name, gender, year, group) {
     clearAddForm();
 
 }
+
+$(function () {
+    reloadData();
+    reloadPeriods();
+});
